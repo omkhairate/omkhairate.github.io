@@ -1,5 +1,5 @@
 import './style.css';
-import './record-models.js';
+import { createRecordModels } from './record-models.js';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { TeapotGeometry } from 'three/addons/geometries/TeapotGeometry.js';
@@ -82,6 +82,7 @@ function initScene() {
   const silver = new THREE.MeshStandardMaterial({ color: 0xb9c7c2, metalness: .85, roughness: .27 });
   const red = new THREE.MeshStandardMaterial({ color: 0xc3442f, metalness: .3, roughness: .4 });
   const model = new THREE.Group(); scene.add(model);
+  const recordModels=createRecordModels(model);
   const figure = new THREE.Group();
   function ellipsoid(parent, x, y, z, sx, sy, sz, material = porcelain, segments = 48) {
     const mesh = new THREE.Mesh(new THREE.SphereGeometry(1, segments, 32), material);
@@ -234,6 +235,7 @@ function initScene() {
     const mobile=innerWidth<=600;
     const scroll=scrollY;let index=0;
     for(let i=1;i<chapters.length;i++)if(scroll>=chapterOffsets[i]-innerHeight*.5)index=i;
+    if(document.body.dataset.chapter!==String(index))document.body.dataset.chapter=String(index);
     const start=chapterOffsets[index]-innerHeight*.5;
     const previous=Math.max(0,index-1);
     const raw=THREE.MathUtils.clamp((scroll-start)/(innerHeight*.5),0,1);
@@ -245,7 +247,10 @@ function initScene() {
       {angle:.28,focus:[-.95,-2.73,1.02],distance:mobile?4.3:3.4,elevation:1.1,offset:mobile?[0,1.05]:[.85,0]},
       {angle:-.42,focus:[-1.4,.68,.56],distance:mobile?4.7:4.0,elevation:1.55,offset:mobile?[0,1.2]:[-.9,0]},
       {angle:-.22,focus:[2.15,-2.62,.2],distance:mobile?4.8:3.5,elevation:.8,offset:mobile?[0,.72]:[.85,0]},
-      {angle:.45,focus:[0,1.96,.1],distance:mobile?7:5.8,elevation:.3,offset:mobile?[0,2.15]:[1.2,-.1]}
+      {angle:.45,focus:[0,1.96,.1],distance:mobile?7:5.8,elevation:.3,offset:mobile?[0,2.15]:[1.2,-.1]},
+      {angle:.12,focus:[-3.8,1.5,-2],distance:mobile?6.5:5.4,elevation:.2,offset:mobile?[0,1.5]:[1.3,0]},
+      {angle:.08,focus:[-4.8,-.8,-2],distance:mobile?6:5,elevation:.3,offset:mobile?[0,1.4]:[1.3,0]},
+      {angle:-.12,focus:[3.8,1,-2],distance:mobile?7:6,elevation:.2,offset:mobile?[0,1.4]:[1.5,0]}
     ];
     const ease=reduceMotion?1:1-Math.exp(-dt*5);
     const from=shots[previous],to={...shots[index],focus:[...shots[index].focus]};
@@ -262,8 +267,9 @@ function initScene() {
     ground.visible=true;
     nomad.visible=true;teapot.rotation.y=elapsed*.18;wire.visible=true;
     avatarRoot.rotation.z=paused?0:Math.sin(elapsed*.35)*.004;
+    recordModels.forEach((group,i)=>{group.rotation.y=Math.sin(elapsed*.18+i)*.1;});
     propellers.forEach((p,i)=>{if(!paused)p.rotation.y=elapsed*(index===3?14:1.5)+i;});
-    const projectFocus=index>0&&index<5;
+    const projectFocus=index>0&&index!==5;
     opticalFocus.copy(focusWorld).applyMatrix4(camera.matrixWorldInverse);
     dof.uniforms.focus.value=THREE.MathUtils.lerp(dof.uniforms.focus.value,-opticalFocus.z,ease);
     dof.uniforms.aperture.value=THREE.MathUtils.lerp(dof.uniforms.aperture.value,projectFocus?.008:0.00008,ease);

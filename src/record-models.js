@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 
-const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const material=(color,metalness=0)=>new THREE.MeshStandardMaterial({color,metalness,roughness:metalness?.3:.75});
 
 function mesh(parent,geometry,mat,position=[0,0,0]){
@@ -55,27 +54,14 @@ function populate(group,type){
   }
 }
 
-document.querySelectorAll('[data-record-model]').forEach(container=>{
-  let renderer,scene,camera,group,frame,visible=false,angle=0,previous=0;
-  function resize(){if(!renderer)return;const {width,height}=container.getBoundingClientRect();renderer.setSize(width,height);camera.aspect=width/height;camera.updateProjectionMatrix();}
-  function draw(now){
-    if(!visible||document.hidden)return;
-    const delta=Math.min((now-previous)/1000,.05);previous=now;
-    if(!reducedMotion&&document.querySelector('#motion-toggle').getAttribute('aria-pressed')!=='true')angle+=delta*.18;
-    group.rotation.y=Math.sin(angle)*.2-.12;group.position.y=Math.sin(angle*.8)*.035;
-    renderer.render(scene,camera);frame=requestAnimationFrame(draw);
-  }
-  function start(){
-    if(!renderer){
-      renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.25));
-      renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;
-      container.appendChild(renderer.domElement);scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(35,1,.1,30);camera.position.set(0,.25,5.7);
-      scene.add(new THREE.HemisphereLight(0xffffff,0x314f42,2.2));const key=new THREE.DirectionalLight(0xffe7c5,3);key.position.set(3,4,5);scene.add(key);
-      const fill=new THREE.DirectionalLight(0xafd8d1,1.5);fill.position.set(-3,1,2);scene.add(fill);
-      group=new THREE.Group();scene.add(group);populate(group,container.dataset.recordModel);resize();new ResizeObserver(resize).observe(container);
-    }
-    cancelAnimationFrame(frame);previous=performance.now();frame=requestAnimationFrame(draw);
-  }
-  const observer=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(visible)start();else cancelAnimationFrame(frame);},{threshold:.05});observer.observe(container);
-  document.addEventListener('visibilitychange',()=>{cancelAnimationFrame(frame);if(!document.hidden&&visible)start();});
-});
+export function createRecordModels(parent){
+  return [
+    {type:'research',position:[-3.8,1.5,-2]},
+    {type:'achievements',position:[-4.8,-.8,-2]},
+    {type:'books',position:[3.8,1,-2]}
+  ].map(({type,position})=>{
+    const group=new THREE.Group();group.position.set(...position);group.scale.setScalar(.75);populate(group,type);parent.add(group);
+    group.traverse(object=>{if(object.isMesh){object.castShadow=true;object.receiveShadow=true;}});
+    return group;
+  });
+}
