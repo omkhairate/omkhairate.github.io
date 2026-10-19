@@ -36,7 +36,8 @@ function populate(group,type){
     for(const side of [-1,1]){
       const handle=mesh(group,new THREE.TorusGeometry(.35,.045,12,40),gold,[side*.56,.14,0]);handle.scale.x=.8;
     }
-    mesh(group,new THREE.BoxGeometry(.63,.1,.015),gold,[0,-.9,.71]);
+    mesh(group,new THREE.BoxGeometry(.48,.09,.035),gold,[0,-.9,.755]);
+    mesh(group,new THREE.CylinderGeometry(.8,.86,.3,48),ink,[0,-1.17,0]);
   }else{
     for(let i=0;i<3;i++){
       const sheet=mesh(group,new THREE.BoxGeometry(1.45,1.95,.025),paper,[(i-1)*.12,(i-1)*.04,-i*.10]);sheet.rotation.z=(i-1)*.12;
@@ -57,7 +58,7 @@ function populate(group,type){
 export function createRecordModels(parent){
   return [
     {type:'research',position:[-3.8,1.5,-2]},
-    {type:'achievements',position:[-4.8,-.8,-2]},
+    {type:'achievements',position:[-3.5,-1.9,1]},
     {type:'books',position:[3.8,1,-2]}
   ].map(({type,position})=>{
     const group=new THREE.Group();group.position.set(...position);group.scale.setScalar(.75);populate(group,type);parent.add(group);

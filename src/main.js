@@ -249,7 +249,7 @@ function initScene() {
       {angle:-.22,focus:[2.15,-2.62,.2],distance:mobile?4.8:3.5,elevation:.8,offset:mobile?[0,.72]:[.85,0]},
       {angle:.45,focus:[0,1.96,.1],distance:mobile?7:5.8,elevation:.3,offset:mobile?[0,2.15]:[1.2,-.1]},
       {angle:.12,focus:[-3.8,1.5,-2],distance:mobile?6.5:5.4,elevation:.2,offset:mobile?[0,1.5]:[1.3,0]},
-      {angle:.08,focus:[-4.8,-.8,-2],distance:mobile?6:5,elevation:.3,offset:mobile?[0,1.4]:[1.3,0]},
+      {angle:.08,focus:[-3.5,-1.9,1],distance:mobile?6:5,elevation:.3,offset:mobile?[0,1.4]:[1.3,0]},
       {angle:-.12,focus:[3.8,1,-2],distance:mobile?7:6,elevation:.2,offset:mobile?[0,1.4]:[1.5,0]}
     ];
     const ease=reduceMotion?1:1-Math.exp(-dt*5);
