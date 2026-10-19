@@ -1,4 +1,5 @@
 import './style.css';
+import './record-models.js';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { TeapotGeometry } from 'three/addons/geometries/TeapotGeometry.js';
